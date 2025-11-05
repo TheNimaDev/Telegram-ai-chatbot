@@ -1,4 +1,4 @@
-let { start,temps } = require("../keyboards")
+let { start, temps } = require("../keyboards")
 let db = require("../db")
 
 exports.strat = (ctx) => {
@@ -12,5 +12,10 @@ exports.selectModel = (ctx) => {
         db.set(`user:${ctx.chat.id}:model`, "gpt-3.5-turbo")
     }
 
-    ctx.editMessageText("حالا حالت پاسخ دهی رو انتخاب کن:",temps())
+    ctx.editMessageText("حالا حالت پاسخ دهی رو انتخاب کن:", temps())
+}
+
+exports.selectTemps = (ctx) => {
+    db.set(`user:${ctx.chat.id}:mode`, ctx.match[0])
+    ctx.editMessageText("سلام چه کمکی میتونم بهتون بکنم؟")
 }

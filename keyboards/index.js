@@ -8,3 +8,14 @@ exports.start = () => {
         ]
     ])
 }
+
+exports.temps = () => {
+    return Markup.inlineKeyboard([
+        [
+            Markup.button.callback('نرمال', '1')
+        ],
+        [
+            Markup.button.callback('خلاقانه', '2'), Markup.button.callback('دقیق', '0')
+        ]
+    ])
+}

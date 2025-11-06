@@ -19,3 +19,12 @@ exports.temps = () => {
         ]
     ])
 }
+
+exports.message = () => {
+    return {
+        keyboard: [
+            [{ text: "اتمام مکالمه" }]
+        ],
+        resize_keyboard: true
+    }
+}

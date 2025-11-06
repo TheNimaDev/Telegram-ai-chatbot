@@ -1,5 +1,6 @@
-let { start, temps } = require("../keyboards")
+let { start, temps, message } = require("../keyboards")
 let db = require("../db")
+let request = require("../utils/request")
 
 exports.strat = (ctx) => {
     ctx.reply("خوش اومدی به ربات چت بات!", start())
@@ -21,24 +22,23 @@ exports.selectTemps = (ctx) => {
 }
 
 exports.message = async (ctx) => {
-    let model = await redis.get(`user:${ctx.chat.id}:model`)
-    let mode = await redis.get(`user:${ctx.chat.id}:mode`)
+    let model = await db.get(`user:${ctx.chat.id}:model`)
+    let mode = await db.get(`user:${ctx.chat.id}:mode`)
     let messageId = ctx.message.message_id
-    let text = ctx.message.text
-
+    let text = ctx.message.text    
+    
     if (!model) return;
 
-    //TODO call openai api and get the response
-    let response = `این یک پاسخ تستی از مدل ${model} با حالت ${mode} برای پیام شما: ${text}`
+    ctx.reply("درخواست شما درحال پردازش است،لطفا چند لحضه صبر کنید!⏳")
+    
+    let response = await request(model, text, +mode)
+    if (response?.error) {
+        return ctx.reply(`!!خطا !!`)
+    }
 
     ctx.reply(response, {
         reply_to_message_id: messageId,
-        reply_markup: {
-            keyboard: [
-                [{ text: "اتمام مکالمه" }]
-            ],
-            resize_keyboard: true
-        }
+        reply_markup: message()
     }
     )
 }

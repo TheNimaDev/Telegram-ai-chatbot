@@ -1,8 +1,9 @@
 let { start, temps, message } = require("../keyboards")
 let db = require("../db")
 let request = require("../utils/request")
+let { Markup } = require("./../bot")
 
-exports.strat = (ctx) => {
+exports.start = (ctx) => {
     ctx.reply("خوش اومدی به ربات چت بات!", start())
 }
 
@@ -25,12 +26,12 @@ exports.message = async (ctx) => {
     let model = await db.get(`user:${ctx.chat.id}:model`)
     let mode = await db.get(`user:${ctx.chat.id}:mode`)
     let messageId = ctx.message.message_id
-    let text = ctx.message.text    
-    
+    let text = ctx.message.text
+
     if (!model) return;
 
     ctx.reply("درخواست شما درحال پردازش است،لطفا چند لحضه صبر کنید!⏳")
-    
+
     let response = await request(model, text, +mode)
     if (response?.error) {
         return ctx.reply(`!!خطا !!`)
@@ -41,4 +42,10 @@ exports.message = async (ctx) => {
         reply_markup: message()
     }
     )
+}
+
+exports.end = async (ctx) => {
+    await db.del(`user:${ctx.chat.id}:model`)
+    await db.del(`user:${ctx.chat.id}:mode`)
+    ctx.reply("مکالمه با موفقیت به اتمام رسید.برای شروع مجدد /start را بزنید.", Markup.removeKeyboard())
 }

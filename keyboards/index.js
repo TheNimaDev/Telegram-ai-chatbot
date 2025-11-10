@@ -28,3 +28,10 @@ exports.message = () => {
         resize_keyboard: true
     }
 }
+exports.endFreeRequestMessage = () => {
+    return Markup.inlineKeyboard([
+        [
+            Markup.button.callback('خرید اشتراک', 'buy')
+        ]
+    ])
+}

@@ -18,3 +18,29 @@ exports.getUser = async (chatId) => {
         throw error
     }
 }
+exports.isUsersFreeRequestsFinished = async (chatId) => {
+    try {
+        let [user] = await db.query("SELECT * FROM users WHERE chat_id=?", [chatId])
+
+        if (!user.length) return false
+
+        user = user[0]
+        return user.request_free >= process.env.FREE_REQUESTS_COUNT ? true : false
+    } catch (error) {
+        throw error
+    }
+}
+exports.incrementUsersRequestsFree = async (chatId) => {
+    try {
+        let [user] = await db.query("SELECT * FROM users WHERE chat_id=?", [chatId])
+
+        if (!user.length) return false
+
+        user = user[0]
+        await db.query("UPDATE users SET request_free = ? WHERE chat_id=?", [(user.request_free + 1), chatId])
+
+        return true
+    } catch (error) {
+        throw error
+    }
+}

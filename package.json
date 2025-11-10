@@ -13,6 +13,7 @@
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "ioredis": "^5.8.2",
+    "mysql2": "^3.15.3",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {

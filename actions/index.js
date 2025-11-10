@@ -1,5 +1,5 @@
 let { start, temps, message } = require("../keyboards")
-let db = require("../db")
+let db = require("../db/redis")
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
 

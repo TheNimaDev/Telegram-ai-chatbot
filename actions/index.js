@@ -1,11 +1,11 @@
-let { start, temps, message } = require("../keyboards")
+let { start, temps, message, endFreeRequestMessage } = require("../keyboards")
 let redis = require("../db/redis")
-let { createUser, getUser } = require("../repos")
+let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished } = require("../repos")
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
 
 exports.start = async (ctx) => {
-    let isUserExists = await getUser(ctx.chat.id)    
+    let isUserExists = await getUser(ctx.chat.id)
     if (!isUserExists) await createUser(ctx.chat.id)
     ctx.reply("خوش اومدی به ربات چت بات!", start())
 }
@@ -33,6 +33,15 @@ exports.message = async (ctx) => {
 
     if (!model) return;
 
+    let isUserCanSendRequestFree = await isUsersFreeRequsetsFinished(ctx.chat.id)
+
+    if (isUserCanSendRequestFree) {
+        return ctx.reply("تعداد درخواست های رایگان شما تموم شده است!", {
+            reply_to_message_id: messageId,
+            reply_markup: endFreeRequestMessage()
+        })
+    }
+
     ctx.reply("درخواست شما درحال پردازش است،لطفا چند لحضه صبر کنید!⏳")
 
     let response = await request(model, text, +mode)
@@ -45,6 +54,7 @@ exports.message = async (ctx) => {
         reply_markup: message()
     }
     )
+    await incrementUsersRequestsFree(ctx.chat.id)
 }
 
 exports.end = async (ctx) => {

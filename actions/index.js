@@ -1,4 +1,4 @@
-let { start, temps, message, endFreeRequestMessage } = require("../keyboards")
+let { start, temps, message, endFreeRequestMessage,buyPlans } = require("../keyboards")
 let redis = require("../db/redis")
 let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished } = require("../repos")
 let request = require("../utils/request")
@@ -55,6 +55,10 @@ exports.message = async (ctx) => {
     }
     )
     await incrementUsersRequestsFree(ctx.chat.id)
+}
+
+exports.buyPlans = async (ctx) => {    
+    ctx.reply("برای استفاده بیشتر یکی از پلن های زیر رو انتخاب کنید!", buyPlans())
 }
 
 exports.end = async (ctx) => {

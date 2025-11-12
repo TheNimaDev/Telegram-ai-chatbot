@@ -59,3 +59,11 @@ exports.selectPeriod = () => {
         ]
     ])
 }
+exports.confirmOrReject = () => {
+    return Markup.inlineKeyboard([
+        [
+            Markup.button.callback('تایید🟢','confirm'),
+            Markup.button.callback('لغو🔴', 'reject'),
+        ]
+    ])
+}

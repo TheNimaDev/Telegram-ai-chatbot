@@ -9,6 +9,8 @@ bot.action("buyPlans", (ctx) => actions.buyPlans(ctx))
 
 bot.action(["vip_plan", "Turbo_plan", "GPT4_plan"], (ctx) => actions.selectPlan(ctx))
 
+bot.action(["7", "30", "90"], (ctx) => actions.selectPeriod(ctx))
+
 bot.action(['0', '1', '2'], (ctx) => actions.selectTemps(ctx))
 
 bot.hears("اتمام مکالمه", async (ctx) => actions.end(ctx))

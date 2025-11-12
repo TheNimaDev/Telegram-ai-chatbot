@@ -48,3 +48,14 @@ exports.buyPlans = () => {
         ]
     ])
 }
+exports.selectPeriod = () => {
+    return Markup.inlineKeyboard([
+        [
+            Markup.button.callback('7 روزه', '7'),
+            Markup.button.callback('30 روزه', '30'),
+        ],
+        [
+            Markup.button.callback('90 روزه', '90')
+        ]
+    ])
+}

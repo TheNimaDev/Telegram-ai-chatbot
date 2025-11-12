@@ -1,4 +1,4 @@
-let { start, temps, message, endFreeRequestMessage,buyPlans } = require("../keyboards")
+let { start, temps, message, endFreeRequestMessage, buyPlans, selectPeriod } = require("../keyboards")
 let redis = require("../db/redis")
 let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished } = require("../repos")
 let request = require("../utils/request")
@@ -57,8 +57,19 @@ exports.message = async (ctx) => {
     await incrementUsersRequestsFree(ctx.chat.id)
 }
 
-exports.buyPlans = async (ctx) => {    
-    ctx.reply("برای استفاده بیشتر یکی از پلن های زیر رو انتخاب کنید!", buyPlans())
+exports.buyPlans = async (ctx) => {
+    ctx.editMessageText("برای استفاده بیشتر یکی از پلن های زیر رو انتخاب کنید!", buyPlans())
+}
+
+exports.selectPlan = async (ctx) => {
+    if (ctx.match[0] === 'GPT4_plan') {
+        await redis.set(`user:${ctx.chat.id}:plan`, "GPT4")
+    } else if (ctx.match[0] === 'Turbo_plan') {
+        await redis.set(`user:${ctx.chat.id}:plan`, "Turbo")
+    } else if (ctx.match[0] === 'Vip_plan') {
+        await redis.set(`user:${ctx.chat.id}:plan`, "Vip")
+    }
+    ctx.editMessageText("پلن چند روزه ؟", selectPeriod())
 }
 
 exports.end = async (ctx) => {

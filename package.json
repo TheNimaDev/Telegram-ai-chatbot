@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "dotenv -e .env -- nodemon",
-    "mig":"dotenv -e .env -- node migrations/index.js"
+    "mig":"dotenv -e .env -- node migrations/index.js",
+    "seed":"dotenv -e .env -- node seeds/index.js"
   },
   "keywords": [],
   "author": "",

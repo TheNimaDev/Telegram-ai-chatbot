@@ -1,31 +1,31 @@
-let { start, temps, message, endFreeRequestMessage, buyPlans, selectPeriod, confirmOrReject } = require("../keyboards")
+let keyboards = require("../keyboards")
 let redis = require("../db/redis")
-let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished, getPlan } = require("../repos")
+let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished, addOrder, getPlans, getPlan } = require("../repos")
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
 
-exports.start = async (ctx) => {
+let start = async (ctx) => {
     let isUserExists = await getUser(ctx.chat.id)
     if (!isUserExists) await createUser(ctx.chat.id)
-    ctx.reply("خوش اومدی به ربات چت بات!", start())
+    ctx.reply("خوش اومدی به ربات چت بات!", keyboards.start())
 }
 
-exports.selectModel = (ctx) => {
+let selectModel = (ctx) => {
     if (ctx.match[0] === 'GPT4') {
         redis.set(`user:${ctx.chat.id}:model`, "gpt-4")
     } else if (ctx.match[0] === 'Turbo') {
         redis.set(`user:${ctx.chat.id}:model`, "gpt-3.5-turbo")
     }
 
-    ctx.editMessageText("حالا حالت پاسخ دهی رو انتخاب کن:", temps())
+    ctx.editMessageText("حالا حالت پاسخ دهی رو انتخاب کن:", keyboards.temps())
 }
 
-exports.selectTemps = (ctx) => {
+let selectTemps = (ctx) => {
     redis.set(`user:${ctx.chat.id}:mode`, ctx.match[0])
     ctx.editMessageText("سلام چه کمکی میتونم بهتون بکنم؟")
 }
 
-exports.message = async (ctx) => {
+let message = async (ctx) => {
     let model = await redis.get(`user:${ctx.chat.id}:model`)
     let mode = await redis.get(`user:${ctx.chat.id}:mode`)
     let messageId = ctx.message.message_id
@@ -38,7 +38,7 @@ exports.message = async (ctx) => {
     if (isUserCanSendRequestFree) {
         return ctx.reply("تعداد درخواست های رایگان شما تموم شده است!", {
             reply_to_message_id: messageId,
-            reply_markup: endFreeRequestMessage()
+            reply_markup: keyboards.endFreeRequestMessage()
         })
     }
 
@@ -51,37 +51,65 @@ exports.message = async (ctx) => {
 
     ctx.reply(response, {
         reply_to_message_id: messageId,
-        reply_markup: message()
+        reply_markup: keyboards.message()
     }
     )
     await incrementUsersRequestsFree(ctx.chat.id)
 }
 
-exports.buyPlans = async (ctx) => {
-    ctx.editMessageText("برای استفاده بیشتر یکی از پلن های زیر رو انتخاب کنید!", buyPlans())
+let buyPlans = async (ctx) => {
+    ctx.editMessageText("برای استفاده بیشتر یکی از پلن های زیر رو انتخاب کنید!", keyboards.buyPlans())
 }
 
-exports.selectPlan = async (ctx) => {
+let selectPlan = async (ctx) => {
     let plan = ctx.match[0].split("_")[0]
 
     await redis.set(`user:${ctx.chat.id}:plan`, plan)
 
-    let plans = await getPlan(plan)
+    let plans = await getPlans(plan)
     plans = plans.map(plan => ({ period: plan.period_plan, price: plan.price }))
-    ctx.editMessageText("پلن چند روزه ؟", selectPeriod(plans))
+    ctx.editMessageText("پلن چند روزه ؟", keyboards.selectPeriod(plans))
 }
 
-exports.selectPeriod = async (ctx) => {
+let selectPeriod = async (ctx) => {
     await redis.set(`user:${ctx.chat.id}:period`, ctx.match[0])
 
     let period = await redis.get(`user:${ctx.chat.id}:period`)
     let plan = await redis.get(`user:${ctx.chat.id}:plan`)
 
-    ctx.editMessageText(`اشتراک ${period} روزه سرویس ${plan}`, confirmOrReject())
+    ctx.editMessageText(`اشتراک ${period} روزه سرویس ${plan}`, keyboards.confirmOrReject())
 }
 
-exports.end = async (ctx) => {
+let buyPlanConOrRej = async (ctx) => {
+    if (ctx.match[0] === "reject") return start(ctx)
+
+    let thePeriod = await redis.get(`user:${ctx.chat.id}:period`)
+    let thePlan = await redis.get(`user:${ctx.chat.id}:plan`)
+
+    let user = await getUser(ctx.chat.id)
+    if (!user) return start(ctx)
+
+    let plan = await getPlan(thePlan, thePeriod)
+    if (!plan) return start(ctx)
+
+    await addOrder(user.id, plan.id, ctx.chat.id)
+    ctx.reply("//TODO")
+}
+
+let end = async (ctx) => {
     await redis.del(`user:${ctx.chat.id}:model`)
     await redis.del(`user:${ctx.chat.id}:mode`)
     ctx.reply("مکالمه با موفقیت به اتمام رسید.برای شروع مجدد /start را بزنید.", Markup.removeKeyboard())
+}
+
+module.exports = {
+    start,
+    selectModel,
+    selectTemps,
+    message,
+    buyPlans,
+    selectPlan,
+    selectPeriod,
+    buyPlanConOrRej,
+    end,
 }

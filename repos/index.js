@@ -44,12 +44,33 @@ exports.incrementUsersRequestsFree = async (chatId) => {
         throw error
     }
 }
-exports.getPlan = async (plan) => {
+exports.getPlans = async (plan) => {
     try {
         let query = "SELECT * FROM plans WHERE plan=?"
-        let [plans] = await db.query(query,[plan])
+        let [plans] = await db.query(query, [plan])
 
         return plans
+    } catch (error) {
+        throw error
+    }
+}
+exports.addOrder = async (userId, planId, chatId) => {
+    try {
+        let createAt = Date.now()
+        let query = "INSERT INTO orders(user_id,plan_id,chat_id,create_at) VALUES (?,?,?,?)"
+        let [order] = await db.query(query, [userId, planId, chatId, createAt])
+        return order
+    } catch (error) {
+        throw error
+    }
+}
+
+exports.getPlan = async (plan, period) => {
+    try {
+        let query = "SELECT * FROM plans WHERE plan=? AND period_plan=?"
+        let [plans] = await db.query(query, [plan, period])
+
+        return plans[0]
     } catch (error) {
         throw error
     }

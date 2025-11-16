@@ -44,3 +44,13 @@ exports.incrementUsersRequestsFree = async (chatId) => {
         throw error
     }
 }
+exports.getPlan = async (plan) => {
+    try {
+        let query = "SELECT * FROM plans WHERE plan=?"
+        let [plans] = await db.query(query,[plan])
+
+        return plans
+    } catch (error) {
+        throw error
+    }
+}

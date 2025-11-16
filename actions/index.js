@@ -1,6 +1,6 @@
 let { start, temps, message, endFreeRequestMessage, buyPlans, selectPeriod, confirmOrReject } = require("../keyboards")
 let redis = require("../db/redis")
-let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished } = require("../repos")
+let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished, getPlan } = require("../repos")
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
 
@@ -62,22 +62,21 @@ exports.buyPlans = async (ctx) => {
 }
 
 exports.selectPlan = async (ctx) => {
-    if (ctx.match[0] === 'GPT4_plan') {
-        await redis.set(`user:${ctx.chat.id}:plan`, "GPT4")
-    } else if (ctx.match[0] === 'Turbo_plan') {
-        await redis.set(`user:${ctx.chat.id}:plan`, "Turbo")
-    } else if (ctx.match[0] === 'Vip_plan') {
-        await redis.set(`user:${ctx.chat.id}:plan`, "Vip")
-    }
-    ctx.editMessageText("پلن چند روزه ؟", selectPeriod())
+    let plan = ctx.match[0].split("_")[0]
+
+    await redis.set(`user:${ctx.chat.id}:plan`, plan)
+
+    let plans = await getPlan(plan)
+    plans = plans.map(plan => ({ period: plan.period_plan, price: plan.price }))
+    ctx.editMessageText("پلن چند روزه ؟", selectPeriod(plans))
 }
 
 exports.selectPeriod = async (ctx) => {
     await redis.set(`user:${ctx.chat.id}:period`, ctx.match[0])
-    
-    let period=await redis.get(`user:${ctx.chat.id}:period`)
-    let plan=await redis.get(`user:${ctx.chat.id}:plan`)
-    
+
+    let period = await redis.get(`user:${ctx.chat.id}:period`)
+    let plan = await redis.get(`user:${ctx.chat.id}:plan`)
+
     ctx.editMessageText(`اشتراک ${period} روزه سرویس ${plan}`, confirmOrReject())
 }
 

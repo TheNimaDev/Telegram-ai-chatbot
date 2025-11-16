@@ -7,7 +7,7 @@ bot.action(["Turbo", "GPT4"], (ctx) => actions.selectModel(ctx))
 
 bot.action("buyPlans", (ctx) => actions.buyPlans(ctx))
 
-bot.action(["vip_plan", "Turbo_plan", "GPT4_plan"], (ctx) => actions.selectPlan(ctx))
+bot.action(["VIP_plan", "TURBO_plan", "GPT4_plan"], (ctx) => actions.selectPlan(ctx))
 
 bot.action(["7", "30", "90"], (ctx) => actions.selectPeriod(ctx))
 

@@ -5,7 +5,7 @@ exports.start = () => {
         [
             Markup.button.callback('3.5 Turbo', 'Turbo'),
             Markup.button.callback('GPT 4', 'GPT4')
-        ],[
+        ], [
             Markup.button.callback('خرید اشتراک', 'buyPlans')
         ]
     ])
@@ -40,29 +40,29 @@ exports.endFreeRequestMessage = () => {
 exports.buyPlans = () => {
     return Markup.inlineKeyboard([
         [
-            Markup.button.callback('خرید اشتراک ویژه 🚀', 'vip_plan'),
+            Markup.button.callback('خرید اشتراک ویژه 🚀', 'VIP_plan'),
         ],
         [
-            Markup.button.callback('خرید اشتراک 3.5 Turbo', 'Turbo_plan'),
+            Markup.button.callback('خرید اشتراک 3.5 Turbo', 'TURBO_plan'),
             Markup.button.callback('خرید اشتراک GPT 4', 'GPT4_plan')
         ]
     ])
 }
-exports.selectPeriod = () => {
+exports.selectPeriod = (plans) => {
     return Markup.inlineKeyboard([
         [
-            Markup.button.callback('7 روزه', '7'),
-            Markup.button.callback('30 روزه', '30'),
+            Markup.button.callback(` روزه ${plans[0].period} (${plans[0].price} تومان)`, '7'),
+            Markup.button.callback(` روزه ${plans[1].period} (${plans[1].price} تومان)`, '30'),
         ],
         [
-            Markup.button.callback('90 روزه', '90')
+            Markup.button.callback(` روزه ${plans[2].period} (${plans[2].price} تومان)`, '90'),
         ]
     ])
 }
 exports.confirmOrReject = () => {
     return Markup.inlineKeyboard([
         [
-            Markup.button.callback('تایید🟢','confirm'),
+            Markup.button.callback('تایید🟢', 'confirm'),
             Markup.button.callback('لغو🔴', 'reject'),
         ]
     ])

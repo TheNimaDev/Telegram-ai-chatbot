@@ -13,6 +13,8 @@ bot.action(["7", "30", "90"], (ctx) => actions.selectPeriod(ctx))
 
 bot.action(['confirm','reject'], (ctx) => actions.buyPlanConOrRej(ctx))
 
+bot.action("payment", (ctx) => actions.payment(ctx))
+
 bot.action(['0', '1', '2'], (ctx) => actions.selectTemps(ctx))
 
 bot.hears("اتمام مکالمه", async (ctx) => actions.end(ctx))

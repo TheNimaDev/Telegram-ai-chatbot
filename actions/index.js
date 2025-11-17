@@ -1,12 +1,17 @@
 let keyboards = require("../keyboards")
 let redis = require("../db/redis")
-let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished, addOrder, getPlans, getPlan } = require("../repos")
+let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished, addOrder, getPlans, getPlan, getOrder, getPlanById } = require("../repos")
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
+let zibal = require("../services/zibal")
 
 let start = async (ctx) => {
     let isUserExists = await getUser(ctx.chat.id)
     if (!isUserExists) await createUser(ctx.chat.id)
+
+    await redis.del(`user:${ctx.chat.id}:period`)
+    await redis.del(`user:${ctx.chat.id}:plan`)
+
     ctx.reply("خوش اومدی به ربات چت بات!", keyboards.start())
 }
 
@@ -93,7 +98,24 @@ let buyPlanConOrRej = async (ctx) => {
     if (!plan) return start(ctx)
 
     await addOrder(user.id, plan.id, ctx.chat.id)
-    ctx.reply("//TODO")
+    ctx.editMessageText("برای تکمیل خرید روی گزینه زیر کلیک کنید!", keyboards.payment())
+}
+
+let payment = async (ctx) => {
+    let user = await getUser(ctx.chat.id)
+    let order = await getOrder(user.id)
+    let plan = await getPlanById(order.plan_id)
+
+    let response = await zibal.createPayment({ price: plan.price })
+    if (response.result != 100) {
+        console.log({ error: "payment error", ...response });
+        if (ctx.callbackQuery.message.text == "خطا!،دوباره تلاش کن") {
+            return;
+        }
+        return ctx.editMessageText("خطا!،دوباره تلاش کن", keyboards.payment())
+    }
+    //TODO
+    ctx.reply("ok")
 }
 
 let end = async (ctx) => {
@@ -112,4 +134,5 @@ module.exports = {
     selectPeriod,
     buyPlanConOrRej,
     end,
+    payment
 }

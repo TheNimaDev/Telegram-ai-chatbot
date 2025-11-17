@@ -67,3 +67,10 @@ exports.confirmOrReject = () => {
         ]
     ])
 }
+exports.payment = () => {
+    return Markup.inlineKeyboard([
+        [
+            Markup.button.callback('پرداخت نهایی', 'payment'),
+        ]
+    ])
+}

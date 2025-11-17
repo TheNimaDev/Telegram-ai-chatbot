@@ -18,6 +18,24 @@ exports.getUser = async (chatId) => {
         throw error
     }
 }
+exports.getOrder = async (userId) => {
+    try {
+        let query = "SELECT * FROM orders WHERE user_id=?"
+        let [order] = await db.query(query, [userId])
+        return order[0]
+    } catch (error) {
+        throw error
+    }
+}
+exports.getPlanById = async (planId) => {
+    try {
+        let query = "SELECT * FROM plans WHERE id=?"
+        let [plan] = await db.query(query, [planId])
+        return plan[0]
+    } catch (error) {
+        throw error
+    }
+}
 exports.isUsersFreeRequestsFinished = async (chatId) => {
     try {
         let [user] = await db.query("SELECT * FROM users WHERE chat_id=?", [chatId])

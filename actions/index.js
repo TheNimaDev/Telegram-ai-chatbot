@@ -105,8 +105,7 @@ let payment = async (ctx) => {
     let user = await getUser(ctx.chat.id)
     let order = await getOrder(user.id)
     let plan = await getPlanById(order.plan_id)
-
-    let response = await zibal.createPayment({ price: plan.price })
+    let response = await zibal.createPayment({ price: plan.price, callbackUrl: "//TODO" })
     if (response.result != 100) {
         console.log({ error: "payment error", ...response });
         if (ctx.callbackQuery.message.text == "خطا!،دوباره تلاش کن") {
@@ -114,8 +113,10 @@ let payment = async (ctx) => {
         }
         return ctx.editMessageText("خطا!،دوباره تلاش کن", keyboards.payment())
     }
-    //TODO
-    ctx.reply("ok")
+
+    let link = await zibal.createPaymentLink(response.trackId)
+
+    ctx.editMessageText('پرداخت نهایی 💳', keyboards.finalPayment(link))
 }
 
 let end = async (ctx) => {

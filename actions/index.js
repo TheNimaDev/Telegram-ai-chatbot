@@ -1,6 +1,6 @@
 let keyboards = require("../keyboards")
 let redis = require("../db/redis")
-let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequsetsFinished, addOrder, getPlans, getPlan, getOrder, getPlanById } = require("../repos")
+let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequestsFinished, addOrder, getPlans, getPlan, getOrder, getPlanById, addTrackIdToOrder,getOrderById } = require("../repos")
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
 let zibal = require("../services/zibal")
@@ -8,7 +8,14 @@ let zibal = require("../services/zibal")
 let start = async (ctx) => {
     let isUserExists = await getUser(ctx.chat.id)
     if (!isUserExists) await createUser(ctx.chat.id)
+    
+    let payload=ctx.payload
 
+    if(payload.length){
+        let order=await getOrderById(payload)
+        //TODO
+    }
+        
     await redis.del(`user:${ctx.chat.id}:period`)
     await redis.del(`user:${ctx.chat.id}:plan`)
 
@@ -38,7 +45,7 @@ let message = async (ctx) => {
 
     if (!model) return;
 
-    let isUserCanSendRequestFree = await isUsersFreeRequsetsFinished(ctx.chat.id)
+    let isUserCanSendRequestFree = await isUsersFreeRequestsFinished(ctx.chat.id)
 
     if (isUserCanSendRequestFree) {
         return ctx.reply("تعداد درخواست های رایگان شما تموم شده است!", {
@@ -105,7 +112,7 @@ let payment = async (ctx) => {
     let user = await getUser(ctx.chat.id)
     let order = await getOrder(user.id)
     let plan = await getPlanById(order.plan_id)
-    let response = await zibal.createPayment({ price: plan.price, callbackUrl: "//TODO" })
+    let response = await zibal.createPayment({ price: plan.price, callbackUrl: `${process.env.callbackUrl}?start=${order.id}` })
     if (response.result != 100) {
         console.log({ error: "payment error", ...response });
         if (ctx.callbackQuery.message.text == "خطا!،دوباره تلاش کن") {
@@ -113,6 +120,8 @@ let payment = async (ctx) => {
         }
         return ctx.editMessageText("خطا!،دوباره تلاش کن", keyboards.payment())
     }
+
+    await addTrackIdToOrder(ctx.chat.id, response.trackId)
 
     let link = await zibal.createPaymentLink(response.trackId)
 

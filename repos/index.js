@@ -136,3 +136,23 @@ exports.deleteOrder = async (chatId, status) => {
         throw error
     }
 }
+exports.isUserHasAccess = async (chatId, model) => {
+    try {
+        let [plans] = await db.query("SELECT * FROM plans WHERE plan=?", [model])
+
+        let now = Math.floor(Date.now() / 1000)
+        for (let plan of plans) {
+            let query = "SELECT * FROM orders WHERE chat_id=? AND plan_id=? AND end_at >= ? AND status = 'done'"
+
+            let [order] = await db.query(query, [chatId, plan.id, now])
+
+            if (order.length) {
+                return true
+            }
+        }
+
+        return false
+    } catch (error) {
+        throw error
+    }
+}

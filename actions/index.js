@@ -4,6 +4,7 @@ let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequestsFinish
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
 let zibal = require("../services/zibal")
+let canUserSendRequest = require("../utils/canUserSendRequest")
 
 let start = async (ctx) => {
     let isUserExists = await getUser(ctx.chat.id)
@@ -11,7 +12,7 @@ let start = async (ctx) => {
 
     let payload = ctx.payload
 
-    if (payload.length) {
+    if (payload?.length) {
         let order = await getOrderById(payload)
         let verify = await zibal.verify(order.trackId)
         if (verify.result == 100) {
@@ -57,28 +58,31 @@ let message = async (ctx) => {
 
     if (!model) return;
 
-    let isUserCanSendRequestFree = await isUsersFreeRequestsFinished(ctx.chat.id)
 
-    if (isUserCanSendRequestFree) {
-        return ctx.reply("تعداد درخواست های رایگان شما تموم شده است!", {
+    let response = await canUserSendRequest(ctx.chat.id, model)
+    
+    if (!response.access) {
+        return ctx.reply(response.message, {
             reply_to_message_id: messageId,
-            reply_markup: keyboards.endFreeRequestMessage()
+            reply_markup: response.keyboard
         })
+    } else {
+
+        ctx.reply("درخواست شما درحال پردازش است،لطفا چند لحضه صبر کنید!⏳")
+
+        let response = await request(model, text, +mode)
+        if (response?.error) {
+            return ctx.reply(`!!خطا !!`)
+        }
+
+        ctx.reply(response, {
+            reply_to_message_id: messageId,
+            reply_markup: keyboards.message()
+        }
+        )
+        await incrementUsersRequestsFree(ctx.chat.id)
     }
 
-    ctx.reply("درخواست شما درحال پردازش است،لطفا چند لحضه صبر کنید!⏳")
-
-    let response = await request(model, text, +mode)
-    if (response?.error) {
-        return ctx.reply(`!!خطا !!`)
-    }
-
-    ctx.reply(response, {
-        reply_to_message_id: messageId,
-        reply_markup: keyboards.message()
-    }
-    )
-    await incrementUsersRequestsFree(ctx.chat.id)
 }
 
 let buyPlans = async (ctx) => {

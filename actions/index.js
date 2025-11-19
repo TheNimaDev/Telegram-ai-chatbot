@@ -1,6 +1,6 @@
 let keyboards = require("../keyboards")
 let redis = require("../db/redis")
-let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequestsFinished, addOrder, getPlans, getPlan, getOrder, getPlanById, addTrackIdToOrder,getOrderById } = require("../repos")
+let { createUser, getUser, incrementUsersRequestsFree, isUsersFreeRequestsFinished, addOrder, getPlans, getPlan, getOrder, getPlanById, addTrackIdToOrder, getOrderById, update, deleteOrder } = require("../repos")
 let request = require("../utils/request")
 let { Markup } = require("./../bot")
 let zibal = require("../services/zibal")
@@ -8,14 +8,26 @@ let zibal = require("../services/zibal")
 let start = async (ctx) => {
     let isUserExists = await getUser(ctx.chat.id)
     if (!isUserExists) await createUser(ctx.chat.id)
-    
-    let payload=ctx.payload
 
-    if(payload.length){
-        let order=await getOrderById(payload)
-        //TODO
+    let payload = ctx.payload
+
+    if (payload.length) {
+        let order = await getOrderById(payload)
+        let verify = await zibal.verify(order.trackId)
+        if (verify.result == 100) {
+            await update(order.trackId, "done")
+
+            //TODO 
+
+            ctx.reply("خرید با موفقیت تایید شد 🟢❤️")
+        } else {
+            ctx.reply("عملیات ناموفق 🔴💔")
+            await update(order.trackId, "reject")
+        }
     }
-        
+
+    await deleteOrder(ctx.chat.id, "pending")
+
     await redis.del(`user:${ctx.chat.id}:period`)
     await redis.del(`user:${ctx.chat.id}:plan`)
 

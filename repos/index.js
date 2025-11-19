@@ -96,9 +96,9 @@ exports.getPlan = async (plan, period) => {
 exports.addTrackIdToOrder = async (chatId, trackId) => {
     try {
         let query = "UPDATE orders SET trackId = ? WHERE chat_id=?"
-        
+
         let [result] = await db.query(query, [trackId, chatId])
-        
+
         return result
     } catch (error) {
         throw error
@@ -110,6 +110,28 @@ exports.getOrderById = async (orderId) => {
         let [order] = await db.query(query, [orderId])
 
         return order[0]
+    } catch (error) {
+        throw error
+    }
+}
+exports.update = async (trackId, status) => {
+    try {
+        let query = "UPDATE orders SET status = ? WHERE trackId=?"
+
+        let [result] = await db.query(query, [status, trackId])
+
+        return result
+    } catch (error) {
+        throw error
+    }
+}
+exports.deleteOrder = async (chatId, status) => {
+    try {
+        let query = "DELETE FROM orders WHERE chat_id=? AND status=?"
+
+        let [result] = await db.query(query, [chatId, status])
+
+        return result
     } catch (error) {
         throw error
     }

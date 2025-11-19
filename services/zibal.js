@@ -13,6 +13,14 @@ exports.createPayment = async ({ price, callbackUrl }) => {
 
     return response.data
 }
+exports.verify = async (trackId) => {
+    let response = await zibal.post("v1/verify", {
+        merchant: process.env.MERCHANT,
+        trackId
+    })
+
+    return response.data
+}
 exports.createPaymentLink = async (trackId) => {
     let link = `${process.env.ZIBAL_BASE_API}/start/${trackId}`
     return link

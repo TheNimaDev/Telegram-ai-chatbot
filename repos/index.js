@@ -114,11 +114,16 @@ exports.getOrderById = async (orderId) => {
         throw error
     }
 }
-exports.update = async (trackId, status) => {
+exports.update = async (trackId, status, period) => {
     try {
-        let query = "UPDATE orders SET status = ? WHERE trackId=?"
 
-        let [result] = await db.query(query, [status, trackId])
+        let timeNow = Math.floor(Date.now() / 1000)
+
+        let timeEnded = timeNow + (60 * 60 * 24 * period)
+
+        let query = "UPDATE orders SET status = ? , start_at=? , end_at=? WHERE trackId=?"
+
+        let [result] = await db.query(query, [status, timeNow, timeEnded, trackId])
 
         return result
     } catch (error) {

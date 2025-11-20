@@ -16,9 +16,8 @@ let start = async (ctx) => {
         let order = await getOrderById(payload)
         let verify = await zibal.verify(order.trackId)
         if (verify.result == 100) {
-            await update(order.trackId, "done")
-
-            //TODO 
+            let period = await redis.get(`user:${ctx.chat.id}:period`)
+            await update(order.trackId, "done",period)
 
             ctx.reply("خرید با موفقیت تایید شد 🟢❤️")
         } else {
@@ -60,7 +59,7 @@ let message = async (ctx) => {
 
 
     let response = await canUserSendRequest(ctx.chat.id, model)
-    
+
     if (!response.access) {
         return ctx.reply(response.message, {
             reply_to_message_id: messageId,

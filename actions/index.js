@@ -76,12 +76,15 @@ let message = async (ctx) => {
             })
         }
 
+        if (response.isFreeReq) {
+            await incrementUsersRequestsFree(ctx.chat.id)
+        }
+
         ctx.reply(response, {
             reply_to_message_id: messageId,
             reply_markup: keyboards.message()
         }
         )
-        await incrementUsersRequestsFree(ctx.chat.id)
     }
 
 }

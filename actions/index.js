@@ -17,7 +17,7 @@ let start = async (ctx) => {
         let verify = await zibal.verify(order.trackId)
         if (verify.result == 100) {
             let period = await redis.get(`user:${ctx.chat.id}:period`)
-            await update(order.trackId, "done",period)
+            await update(order.trackId, "done", period)
 
             ctx.reply("خرید با موفقیت تایید شد 🟢❤️")
         } else {
@@ -35,11 +35,7 @@ let start = async (ctx) => {
 }
 
 let selectModel = (ctx) => {
-    if (ctx.match[0] === 'GPT4') {
-        redis.set(`user:${ctx.chat.id}:model`, "gpt-4")
-    } else if (ctx.match[0] === 'Turbo') {
-        redis.set(`user:${ctx.chat.id}:model`, "gpt-3.5-turbo")
-    }
+    redis.set(`user:${ctx.chat.id}:model`, ctx.match[0])
 
     ctx.editMessageText("حالا حالت پاسخ دهی رو انتخاب کن:", keyboards.temps())
 }

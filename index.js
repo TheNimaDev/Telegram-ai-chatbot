@@ -3,7 +3,7 @@ let actions = require("./actions")
 
 bot.start((ctx) => actions.start(ctx))
 
-bot.action(["Turbo", "GPT4"], (ctx) => actions.selectModel(ctx))
+bot.action(["TURBO", "GPT4"], (ctx) => actions.selectModel(ctx))
 
 bot.action("buyPlans", (ctx) => actions.buyPlans(ctx))
 

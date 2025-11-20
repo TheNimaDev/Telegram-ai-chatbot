@@ -144,8 +144,11 @@ exports.deleteOrder = async (chatId, status) => {
 exports.isUserHasAccess = async (chatId, model) => {
     try {
         let [plans] = await db.query("SELECT * FROM plans WHERE plan=?", [model])
+        let [vipPlans] = await db.query("SELECT * FROM plans WHERE plan=?", ["VIP"])
+        plans = [...plans, ...vipPlans]
 
         let now = Math.floor(Date.now() / 1000)
+        
         for (let plan of plans) {
             let query = "SELECT * FROM orders WHERE chat_id=? AND plan_id=? AND end_at >= ? AND status = 'done'"
 

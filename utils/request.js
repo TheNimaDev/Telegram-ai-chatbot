@@ -1,8 +1,8 @@
 let axios = require("axios")
 
-module.exports = async (model,text,mode) => {
+module.exports = async (model, text, mode) => {
     let data = JSON.stringify({
-        "model": model,
+        "model": model == "GTP4" ? "gpt-4" : "gpt-3.5-turbo",
         "messages": [
             {
                 "role": "system",
@@ -22,7 +22,7 @@ module.exports = async (model,text,mode) => {
             'Content-Type': 'application/json'
         },
         data: data
-    }).then((response) => {        
+    }).then((response) => {
         if (response.data.status == 200) {
             return response.data.result.choices[0].message.content
         } else {

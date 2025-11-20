@@ -18,6 +18,9 @@ exports.temps = () => {
         ],
         [
             Markup.button.callback('خلاقانه', '2'), Markup.button.callback('دقیق', '0')
+        ],
+        [
+            Markup.button.callback('بازگشت', 'back')
         ]
     ])
 }
@@ -34,6 +37,9 @@ exports.endFreeRequestMessage = () => {
     return Markup.inlineKeyboard([
         [
             Markup.button.callback('خرید اشتراک', 'buyPlans')
+        ],
+        [
+            Markup.button.callback('بازگشت', 'back')
         ]
     ])
 }
@@ -45,6 +51,9 @@ exports.buyPlans = () => {
         [
             Markup.button.callback('خرید اشتراک 3.5 Turbo', 'TURBO_plan'),
             Markup.button.callback('خرید اشتراک GPT 4', 'GPT4_plan')
+        ],
+        [
+            Markup.button.callback('بازگشت', 'back')
         ]
     ])
 }
@@ -56,6 +65,9 @@ exports.selectPeriod = (plans) => {
         ],
         [
             Markup.button.callback(` روزه ${plans[2].period} (${plans[2].price} تومان)`, '90'),
+        ],
+        [
+            Markup.button.callback('بازگشت', 'back')
         ]
     ])
 }
@@ -78,6 +90,16 @@ exports.finalPayment = (link) => {
     return Markup.inlineKeyboard([
         [
             Markup.button.url('پرداخت', link),
+        ],
+        [
+            Markup.button.callback('بازگشت', 'back')
+        ]
+    ])
+}
+exports.back = () => {
+    return Markup.inlineKeyboard([
+        [
+            Markup.button.callback('بازگشت', 'back')
         ]
     ])
 }

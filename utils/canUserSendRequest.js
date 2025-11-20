@@ -15,7 +15,7 @@ module.exports = async (chatId, model) => {
         return {
             access: false,
             message: "تعداد درخواست های رایگان شما تموم شده است!",
-            keyboard: keyboards.endFreeRequestMessage()
+            keyboard: keyboards.endFreeRequestMessage
         }
     }
     return {

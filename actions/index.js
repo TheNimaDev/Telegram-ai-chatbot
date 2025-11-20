@@ -31,7 +31,13 @@ let start = async (ctx) => {
     await redis.del(`user:${ctx.chat.id}:period`)
     await redis.del(`user:${ctx.chat.id}:plan`)
 
-    ctx.reply("خوش اومدی به ربات چت بات!", keyboards.start())
+    if (ctx.match[0] == "start") {
+        return ctx.reply("خوش اومدی به ربات چت بات!", keyboards.start())
+    } else if (ctx.match[0] == "اتمام مکالمه") {
+        return ctx.reply("عملیات مورد نظر خود را انتخاب کنید!", keyboards.start())
+    }
+
+    ctx.editMessageText("عملیات مورد نظر خود را انتخاب کنید!", keyboards.start())
 }
 
 let selectModel = (ctx) => {
@@ -42,7 +48,7 @@ let selectModel = (ctx) => {
 
 let selectTemps = (ctx) => {
     redis.set(`user:${ctx.chat.id}:mode`, ctx.match[0])
-    ctx.editMessageText("سلام چه کمکی میتونم بهتون بکنم؟")
+    ctx.editMessageText("سلام چه کمکی میتونم بهتون بکنم؟", keyboards.back())
 }
 
 let message = async (ctx) => {
@@ -57,17 +63,17 @@ let message = async (ctx) => {
     let response = await canUserSendRequest(ctx.chat.id, model)
 
     if (!response.access) {
-        return ctx.reply(response.message, {
-            reply_to_message_id: messageId,
-            reply_markup: response.keyboard
-        })
+        return ctx.reply(response.message, response.keyboard())
     } else {
 
         ctx.reply("درخواست شما درحال پردازش است،لطفا چند لحضه صبر کنید!⏳")
 
-        let response = await request(model, text, +mode)
+        let response = "await request(model, text, +mode)"
         if (response?.error) {
-            return ctx.reply(`!!خطا !!`)
+            return ctx.reply(`!!خطا !!`, {
+                reply_to_message_id: messageId,
+                reply_markup: keyboards.message()
+            })
         }
 
         ctx.reply(response, {
@@ -142,7 +148,8 @@ let payment = async (ctx) => {
 let end = async (ctx) => {
     await redis.del(`user:${ctx.chat.id}:model`)
     await redis.del(`user:${ctx.chat.id}:mode`)
-    ctx.reply("مکالمه با موفقیت به اتمام رسید.برای شروع مجدد /start را بزنید.", Markup.removeKeyboard())
+    await ctx.reply("مکالمه با موفقیت به اتمام رسید.🟢", Markup.removeKeyboard())
+    start(ctx)
 }
 
 module.exports = {

@@ -1,37 +1,60 @@
-# 🤖 Telegram AI Chatbot
+# 🤖 Telegram AI Chatbot - V1.1.0
 
-A smart Telegram chatbot powered by **OpenAI** and **Telegraf**, built with **Node.js**.  
-Chat directly in Telegram using the latest AI models.
+A smart Telegram chatbot built with **OpenAI**, **Telegraf**, and
+**Node.js**.\
+It lets users chat with AI models directly inside Telegram and includes
+free usage limits, paid plans, MySQL storage, migrations, seeds, and
+Zibal payment support.
 
----
+------------------------------------------------------------------------
 
 ## 🚀 Features
-- Chat with AI inside Telegram  
-- Supports GPT models (configurable)  
-- Simple and fast setup  
 
----
+-   AI chat inside Telegram
+-   Configurable GPT model support
+-   Free request limits
+-   Paid subscription plans (7, 30, 90 days)
+-   MySQL integration for users, plans, and orders
+-   Zibal payment gateway integration
+-   Automatic database migrations & seeds
+-   Clean and scalable project structure
+
+------------------------------------------------------------------------
 
 ## ⚙️ Setup
 
-```bash
+``` bash
 git clone https://github.com/imNima10/Telegram-ai-chatbot.git
 cd Telegram-ai-chatbot
 npm install
 ```
 
-Create a `.env` file and add:
+Create a `.env` file:
 
-```env
-REDIS_URI = # redis uri (redis://localhost:6379)
-BOT_TOKEN = # your telegram bot token (get from @Botfather on telegram)
-ONE_API_TOKEN = # your oneapi token (get from one-api.ir)
+``` env
+REDIS_URI= # redis uri (redis://localhost:6379)
+BOT_TOKEN= # your telegram bot token (get from @Botfather on telegram)
+ONE_API_TOKEN= # your oneapi token (get from one-api.ir)
+DB_URI= # your db uri (mysql://root:@localhost:3306/chatbot)
+FREE_REQUESTS_COUNT= # give a number (5 or 10 or ...)
+
+MERCHANT= # zibal merchant (for test => zibal)
+ZIBAL_BASE_API= # zibal base api (https://gateway.zibal.ir)
+CALLBACKURL= # your callback_url (https://t.me/yourBotUrl)
 ```
 
-Then run:
-```bash
+Run the project:
+
+``` bash
+npm run mig
+npm run seed
 npm run dev
 ```
+
+------------------------------------------------------------------------
+## ⚠️ Important for users in Iran
+
+If you are running this bot from Iran, you **must use a VPN**
 
 ---
 

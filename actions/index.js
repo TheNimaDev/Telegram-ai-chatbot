@@ -68,7 +68,7 @@ let message = async (ctx) => {
 
         ctx.reply("درخواست شما درحال پردازش است،لطفا چند لحضه صبر کنید!⏳")
 
-        let response = "await request(model, text, +mode)"
+        let response = await request(model, text, +mode)
         if (response?.error) {
             return ctx.reply(`!!خطا !!`, {
                 reply_to_message_id: messageId,

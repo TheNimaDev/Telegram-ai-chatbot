@@ -24,7 +24,7 @@ Zibal payment support.
 ## ⚙️ Setup
 
 ``` bash
-git clone https://github.com/imNima10/Telegram-ai-chatbot.git
+git clone https://github.com/TheNimaDev/Telegram-ai-chatbot.git
 cd Telegram-ai-chatbot
 npm install
 ```
@@ -59,7 +59,7 @@ If you are running this bot from Iran, you **must use a VPN**
 ---
 
 ## 🧾 License
-Feel free to use, modify, and share with credit to **[@imNima10](https://github.com/imNima10)** 💜
+Feel free to use, modify, and share with credit to **[@TheNimaDev](https://github.com/TheNimaDev)** 💜
 
 ---
 ## 💜 
@@ -73,5 +73,5 @@ If you find a bug or want to improve something, open an issue or PR.
 
 ---
 
-**Author:** [@imNima10](https://github.com/imNima10)  
+**Author:** [@TheNimaDev](https://github.com/TheNimaDev)  
 Built with 💻 + ☕ + ❤️
